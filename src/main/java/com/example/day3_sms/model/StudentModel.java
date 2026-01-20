@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Collection;
 
-@Data
+@Data//for getters,setters
 //saare constructer khud s bn jaye
 @AllArgsConstructor
 @NoArgsConstructor//for student having no information
@@ -17,7 +17,7 @@ import java.util.Collection;
 
 
 public class StudentModel {
-    @Id
+    @Id//primary key
     private String id;
     private String name;
     private int age;
