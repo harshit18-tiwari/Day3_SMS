@@ -3,8 +3,6 @@ package com.example.day3_sms.repository;
 import com.example.day3_sms.model.StudentModel;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface StudentRepository extends MongoRepository <StudentModel, String> {
-    //this repo will use by service
+public interface StudentRepository extends MongoRepository <StudentModel, String>{
+
 }
-
-

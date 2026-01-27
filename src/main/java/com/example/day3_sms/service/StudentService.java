@@ -4,19 +4,43 @@ import com.example.day3_sms.model.StudentModel;
 import com.example.day3_sms.repository.StudentRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class StudentService {
-//    controller->service(buisness logic)->repository->Model
-    //crud operation
-    private StudentRepository repository;
+    private final StudentRepository repository;
 
     public StudentService(StudentRepository repository) {
         this.repository = repository;
     }
 
-    // Create
-    public StudentModel addStudent(StudentModel student) {
-        //only for saving
+    //    create
+    public StudentModel addStudent(StudentModel student){
         return repository.save(student);
+    }
+    // display student
+    public List<StudentModel> getStudents(){
+        return repository.findAll();
+    }
+
+    // update
+    public StudentModel updateStudent(String id,StudentModel student){
+        StudentModel existingStudent = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("No Student found"));
+
+
+        existingStudent.setName(student.getName());
+        existingStudent.setAge(student.getAge());
+        existingStudent.setEmail(student.getEmail());
+
+        return repository.save(existingStudent);
+    }
+
+    // delete by id
+    public void deleteStudent(String id){
+        StudentModel existingStudent = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("No Student found with id: " + id));
+
+        repository.delete(existingStudent);
     }
 }
