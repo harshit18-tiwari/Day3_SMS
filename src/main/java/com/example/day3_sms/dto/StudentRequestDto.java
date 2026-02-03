@@ -19,6 +19,30 @@ public class StudentRequestDto {
     @NotBlank(message="Name cannot be blank")
     private String name;
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     @Min(value=5,message="Age cannot be less than 5")
     @Max(value = 90,message="Age cannot be more than 90")
     private int age;
