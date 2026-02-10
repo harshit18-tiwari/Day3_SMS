@@ -1,50 +1,88 @@
 package com.example.day3_sms.controller;
 
+import com.example.day3_sms.dto.StudentPatchDto;
 import com.example.day3_sms.dto.StudentRequestDto;
 import com.example.day3_sms.dto.StudentResponseDto;
 import com.example.day3_sms.model.StudentModel;
 import com.example.day3_sms.service.StudentService;
+import com.example.day3_sms.util.JwtUtil;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@CrossOrigin(origins = "*")
 @RestController
 public class StudentController {
     private final StudentService service;
+    private final JwtUtil jwtUtil;
 
-    public StudentController(StudentService service) {
+    public StudentController(StudentService service,JwtUtil jwtUtil) {
+
         this.service = service;
+        this.jwtUtil = jwtUtil;
+    }
+
+    private void checkToken(String authHeader) {
+        if(authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new RuntimeException("Invalid token");
+        }
+
+        String token = authHeader.substring(7);
+
+        jwtUtil.validateTokenAndGetEmail(token);
     }
 //    Create Function API
 
-    @PostMapping("/add-student")
-    public StudentResponseDto addStudent(@Valid @RequestBody StudentRequestDto student){
+    @PostMapping("/students")
+    public StudentResponseDto addStudent(@RequestHeader("Authorization") String authHeader,@Valid @RequestBody StudentRequestDto student){
+        checkToken(authHeader);
         return service.addStudent(student);
     }
     // display students
 
-    @GetMapping("/students")
+//    @GetMapping("/students")
 //    public List<StudentModel> getStudents(){
 //        return service.getStudents();
 //    }
 
-    public List<StudentResponseDto> getStudents(){
-        return service.getAllStudents();
+    @GetMapping("/students")
+    public List<StudentResponseDto> getStudents(
+            @RequestHeader(value = "Authorization",required = false) String authHeader
+    ){
+        checkToken(authHeader);
+        return service.getStudents();
     }
 
-    @PutMapping("/update/{id}")
+
+//    @PutMapping("/update/{id}")
 //    public StudentModel updateStudent(@PathVariable String id, @RequestBody StudentModel student){
 //        return service.updateStudent(id, student);
 //    }
 
+
+    @PutMapping("/update/{id}")
     public StudentResponseDto updateStudent(@PathVariable String id, @Valid @RequestBody StudentRequestDto student){
-        return service.updateStudent(id,student);
+        return service.updateStudent(id, student);
     }
     // delete
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/students/{id}")
     public String deleteStudent(@PathVariable String id){
         service.deleteStudent(id);
         return "Student delete successfully";
     }
+
+    @PatchMapping("/students/{id}")
+    public StudentResponseDto patchStudent(
+            @PathVariable String id,
+            @Valid @RequestBody StudentPatchDto student
+    ) {
+        return service.patchStudent(id, student);
+    }
+
 }

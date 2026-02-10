@@ -7,6 +7,9 @@ import com.example.day3_sms.model.StudentModel;
 import com.example.day3_sms.repository.StudentRepository;
 import org.springframework.stereotype.Service;
 
+
+import com.example.day3_sms.dto.StudentPatchDto;
+
 import java.util.List;
 
 @Service
@@ -22,8 +25,8 @@ public class StudentService {
 //        return repository.save(student);
 //    }
 
-    public StudentResponseDto addStudent(StudentRequestDto dto) {
-        // for data-base
+
+    public StudentResponseDto addStudent(StudentRequestDto dto){
         StudentModel student = new StudentModel();
         student.setName(dto.getName());
         student.setAge(dto.getAge());
@@ -31,8 +34,6 @@ public class StudentService {
 
         StudentModel saved = repository.save(student);
 
-
-        //for user
         return new StudentResponseDto(
                 saved.getId(),
                 saved.getName(),
@@ -40,12 +41,13 @@ public class StudentService {
                 saved.getEmail()
         );
     }
+
     // display student
 //    public List<StudentModel> getStudents(){
 //        return repository.findAll();
 //    }
 
-    public List<StudentResponseDto> getAllStudents() {
+    public List<StudentResponseDto> getStudents() {
         return repository.findAll()
                 .stream()
                 .map(s -> new StudentResponseDto(
@@ -90,6 +92,7 @@ public class StudentService {
         );
     }
 
+
     // delete by id
     public void deleteStudent(String id){
         StudentModel existingStudent = repository.findById(id)
@@ -97,4 +100,34 @@ public class StudentService {
 
         repository.delete(existingStudent);
     }
+
+    public StudentResponseDto patchStudent(String id, StudentPatchDto dto) {
+
+        StudentModel student = repository.findById(id)
+                .orElseThrow(() ->
+                        new StudentNotFoundException("Student not found with id: " + id)
+                );
+
+        if (dto.getName() != null) {
+            student.setName(dto.getName());
+        }
+
+        if (dto.getAge() != null) {
+            student.setAge(dto.getAge());
+        }
+
+        if (dto.getEmail() != null) {
+            student.setEmail(dto.getEmail());
+        }
+
+        StudentModel updated = repository.save(student);
+
+        return new StudentResponseDto(
+                updated.getId(),
+                updated.getName(),
+                updated.getAge(),
+                updated.getEmail()
+        );
+    }
+
 }
